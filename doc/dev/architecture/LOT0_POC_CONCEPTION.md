@@ -347,6 +347,21 @@ confiance côté client pour la reprise.
 stable du maître par installation ; protocole d'appairage standard reposant
 sur un secret court affiché par le maître. Aucune n'est retenue ici.
 
+**Spike du 13 septembre 2026 — faisabilité confirmée sur Android**
+(`app/spikes/ws_tls/README.md`). Sur le Pixel 8a (Android 17, `targetSdk` 36) :
+
+- clé EC P-256 et certificat auto-signé générés sur l'appareil en 40,6 ms ;
+- serveur WebSocket TLS `dart:io` opérationnel ;
+- client PC avec épinglage strict connecté par USB et sur le réseau local réel
+  (RTT médian 16 ms en Wi-Fi) ;
+- empreinte différente et validation standard refusées ;
+- APK limité à `INTERNET` (A2) et A1.
+
+Restent **À TESTER** en T4 et T5 : iOS, client mobile, `targetSdk` 37
+(A3), changement d'IP, arrière-plan, persistance de l'identité, jetons et QR
+de connexion. La dépendance de génération reste à choisir après examen, car
+`basic_utils` est jugée trop large.
+
 ## 8. iOS — état et pistes d'émulation
 
 **Constat** : aucun Mac ni iPhone local ; Windows ne permet pas d'exécuter
