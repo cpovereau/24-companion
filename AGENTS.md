@@ -565,3 +565,30 @@ pas le moteur réel de 24. Ses arbitrages humains (sécurité dès le POC,
 récupération, cinq tentatives automatiques au maximum, matrice matérielle,
 acceptation et diagnostic) sont consignés dans `LOT0_POC.md` ; ne pas les
 remplacer par des hypothèses moins exigeantes.
+
+------------------------------------------------------------------------
+
+## 15. Poste de développement local et émulateur
+
+L'environnement réellement installé et ses limites sont consignés dans
+`doc/dev/operations/DEV_ENVIRONMENT.md`. Sur le poste actuel (16 Gio),
+**1 AVD simultané est VIABLE MAIS CONTRAIGNANT** : privilégier le téléphone
+Android physique pour les cycles de build et de lancement.
+
+Avant de lancer l'émulateur, la session doit être allégée avec le script
+local, **non versionné** car propre au poste :
+
+``` text
+C:\dev\scripts\prepare-avd-session.ps1
+```
+
+Règles :
+
+1.  ne l'exécuter réellement qu'avec l'accord explicite de l'utilisateur :
+    il ferme des applications et arrête des services ;
+2.  commencer par `-WhatIf` pour présenter ce qui serait arrêté ;
+3.  ne pas modifier les types de démarrage ni fermer VS Code, Codex,
+    Android Studio, les protections Windows ou Hyper-V/WHP ;
+4.  ne pas ajouter ce script, ses noms de services ni d'autres données
+    propres au poste dans ce dépôt public ;
+5.  arrêter le daemon Gradle après un build lorsqu'un AVD est lancé.

@@ -316,6 +316,46 @@ Repère local proposé, non seuil officiel : viser environ 6 Gio disponibles
 pour un essai AVD de 4 Gio sans compilation simultanée ; davantage pour un build.
 Le premier AVD reste non lancé et non qualifié.
 
+### Script local d'allègement avant AVD
+
+Pour rendre l'allègement reproductible, un script PowerShell local existe
+sur le poste : `C:\dev\scripts\prepare-avd-session.ps1`. Il est **hors
+dépôt et non versionné**, car il contient des noms d'applications et de
+services propres à ce poste.
+
+Ce qu'il fait :
+
+- mesure la mémoire disponible et le commit avant et après ;
+- arrête les daemons Gradle/Kotlin ;
+- ferme les applications utilisateur non nécessaires au banc : outils
+  d'accès distant, conteneurs, musique, nettoyage, Mobile connecté,
+  utilitaires constructeur, navigateur Edge sauf avec `-KeepEdge` ;
+- arrête les services qui relanceraient ces applications ou qui
+  consomment de la mémoire sans servir au banc : accès distant,
+  conteneurs, bases de données locales, utilitaires constructeur ;
+- arrête les sous-agents constructeur orphelins et exécute `wsl --shutdown`
+  si une VM WSL tourne ;
+- signale les processus relancés et compare la mémoire disponible au seuil
+  local, 6 000 Mio par défaut (`-ThresholdMB`) ;
+- avec `-StartEmulator`, lance `lot0_api37_medium_phone` en démarrage à
+  froid, sans métriques ni sauvegarde d'état, seulement si le seuil est
+  atteint (`-Force` pour passer outre).
+
+Garde-fous : simulation avec `-WhatIf` ; auto-élévation UAC hors
+simulation ; aucun type de démarrage modifié, donc le script est à
+relancer après chaque redémarrage de Windows. VS Code, Codex, Claude Code,
+Android Studio (seulement signalé s'il est ouvert), Defender et Hyper-V/WHP
+ne sont jamais touchés.
+
+``` powershell
+pwsh -File C:\dev\scripts\prepare-avd-session.ps1 -WhatIf
+pwsh -File C:\dev\scripts\prepare-avd-session.ps1 -StartEmulator
+```
+
+Validation : exécution en simulation réussie le 13 septembre 2026, avec
+6 856 Mio disponibles. Aucune exécution réelle ni mesure de gain n'a encore
+été faite avec ce script.
+
 Sur ce poste, le banc courant privilégie les appareils Android physiques
 et au maximum un AVD simultané jusqu'à mesure contraire. Avant les campagnes
 AVD, alléger les applications utilisateur non nécessaires et mesurer la
