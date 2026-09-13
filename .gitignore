@@ -24,8 +24,18 @@ tmp/
 temp/
 .cache/
 
-# Dépendances / builds (à compléter lorsque la stack sera choisie)
+# Dépendances / builds
 node_modules/
 dist/
 build/
 coverage/
+
+# Dart / Flutter (POC LOT 0, app/)
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+
+# Signature d'applications : jamais versionnée
+*.jks
+*.keystore
+key.properties

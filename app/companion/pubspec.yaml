@@ -1,0 +1,27 @@
+name: juste_a_temps
+description: "Juste à temps — POC technique du LOT 0 de 24"
+publish_to: 'none'
+
+# build-name -> versionName (Android) / CFBundleShortVersionString (iOS)
+# build-number -> versionCode (Android) / CFBundleVersion (iOS)
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.3
+
+# Membre du workspace Dart défini dans app/pubspec.yaml.
+resolution: workspace
+
+# Toute dépendance ajoutée doit être examinée pour les permissions et
+# entitlements qu'elle introduit dans l'artefact final (ADR-0002).
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

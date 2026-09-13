@@ -1,0 +1,153 @@
+# CI du POC LOT 0 « Juste à temps » (doc/dev/architecture/LOT0_POC_CONCEPTION.md §6).
+# app/spikes/ est exclu : code jetable, hors workspace Dart.
+name: app-ci
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - '!app/spikes/**'
+      - '.github/workflows/app-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - '!app/spikes/**'
+      - '.github/workflows/app-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: app-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: 3.47.4
+  # Empreinte publiée dans releases_linux.json (canal stable).
+  FLUTTER_SHA256: 5b45f0ceda99b9bebdc873e7e69f6450aeb4c30f454b505e2e62fc9255a907d3
+  FLUTTER_ANALYTICS: 'false'
+
+defaults:
+  run:
+    shell: bash
+    working-directory: app
+
+jobs:
+  analyze-test:
+    name: Format, analyse et tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Cache Flutter SDK
+        id: flutter-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/flutter
+          key: flutter-linux-${{ env.FLUTTER_VERSION }}-${{ env.FLUTTER_SHA256 }}
+
+      - name: Installer Flutter (archive officielle vérifiée)
+        if: steps.flutter-cache.outputs.cache-hit != 'true'
+        working-directory: ${{ runner.temp }}
+        run: |
+          archive="flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
+          curl -fsSL -o "$archive" \
+            "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/${archive}"
+          echo "${FLUTTER_SHA256}  ${archive}" | sha256sum --check --strict
+          tar -xJf "$archive" -C "$HOME"
+
+      - name: Configurer Flutter
+        run: |
+          echo "$HOME/flutter/bin" >> "$GITHUB_PATH"
+          "$HOME/flutter/bin/flutter" --disable-analytics
+          "$HOME/flutter/bin/flutter" --version
+
+      - name: Dépendances du workspace
+        run: flutter pub get
+
+      - name: Format
+        run: dart format --output=none --set-exit-if-changed companion/lib companion/test
+
+      - name: Analyse
+        working-directory: app/companion
+        run: flutter analyze --fatal-infos
+
+      - name: Tests
+        working-directory: app/companion
+        run: flutter test
+
+  android-permissions:
+    name: APK release et allowlist des permissions
+    runs-on: ubuntu-24.04
+    needs: analyze-test
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Cache Flutter SDK
+        id: flutter-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/flutter
+          key: flutter-linux-${{ env.FLUTTER_VERSION }}-${{ env.FLUTTER_SHA256 }}
+
+      - name: Installer Flutter (archive officielle vérifiée)
+        if: steps.flutter-cache.outputs.cache-hit != 'true'
+        working-directory: ${{ runner.temp }}
+        run: |
+          archive="flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
+          curl -fsSL -o "$archive" \
+            "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/${archive}"
+          echo "${FLUTTER_SHA256}  ${archive}" | sha256sum --check --strict
+          tar -xJf "$archive" -C "$HOME"
+
+      - name: Configurer Flutter
+        run: |
+          echo "$HOME/flutter/bin" >> "$GITHUB_PATH"
+          "$HOME/flutter/bin/flutter" --disable-analytics
+          "$HOME/flutter/bin/flutter" --version
+
+      - name: Cache Gradle
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('app/companion/android/**/*.gradle.kts', 'app/companion/android/gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Dépendances du workspace
+        run: flutter pub get
+
+      # Le template signe la variante release avec la clé debug : aucune clé ni
+      # secret n'est nécessaire, et l'APK n'est destiné qu'au contrôle.
+      - name: Construire l'APK release
+        working-directory: app/companion
+        run: flutter build apk --release
+
+      - name: Contrôler les permissions (ADR-0002)
+        run: >
+          tool/ci/check-android-permissions.sh
+          companion/build/app/outputs/flutter-apk/app-release.apk
+          tool/ci/android-permissions.allowlist
+
+      - name: Conserver l'APK pour inspection
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: app-release-apk
+          path: app/companion/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 7
+          if-no-files-found: ignore

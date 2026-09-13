@@ -42,8 +42,12 @@ humaine, sans être un prérequis d'accès pour préparer le POC.
 ```text
 24/
 ├── README.md
+├── LICENSE                  # tous droits réservés
+├── AGENTS.md
 ├── .gitignore
 ├── .editorconfig
+├── .github/workflows/       # CI du POC
+├── app/                     # code du POC LOT 0 « Juste à temps » (voir app/README.md)
 ├── doc/
 │   ├── README.md
 │   ├── conception/          # liaison locale vers Google Drive, non versionnée

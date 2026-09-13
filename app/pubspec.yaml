@@ -1,0 +1,11 @@
+name: juste_a_temps_workspace
+description: "Workspace Dart du POC LOT 0 de 24 (Juste à temps)."
+publish_to: 'none'
+
+environment:
+  sdk: ^3.13.3
+
+# Un package par frontière logique (doc/dev/architecture/LOT0_POC_CONCEPTION.md §3).
+# Les packages sont ajoutés au fil des tranches. app/spikes/ n'en fait jamais partie.
+workspace:
+  - companion

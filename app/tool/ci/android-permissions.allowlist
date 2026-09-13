@@ -1,0 +1,14 @@
+# Allowlist des permissions de l'APK release Android — ADR-0002.
+#
+# Toute modification est une décision : la correspondance entre les capacités
+# autorisées par l'ADR-0002 et les permissions concrètes sera formalisée par
+# l'ADR-0003, à valider avant T4 (doc/dev/architecture/LOT0_POC_CONCEPTION.md).
+#
+# Format : <type> <nom> ; ${applicationId} = identifiant du package.
+
+# Base observée au T0 (13 septembre 2026), APK release du template Flutter.
+# Permission de signature interne déclarée par AndroidX (androidx.core) pour
+# protéger les récepteurs dynamiques non exportés. Elle ne donne accès à aucune
+# capacité ni donnée du téléphone. À confirmer dans l'ADR-0003.
+permission ${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+uses-permission ${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
