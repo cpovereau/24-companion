@@ -155,6 +155,30 @@ Les détails laissés ouverts par `LOT0_PREPARATION.md` §9 sont tranchés
 **Précisé ici** : représentation des données synthétiques (fixture), forme
 des commandes et événements de domaine, erreurs métier.
 
+**Réalisation (13 septembre 2026)** : package `app/packages/domain`
+(`juste_a_temps_domain`) et fixture JSON expérimentale
+`app/fixtures/intervention_alpha/scenario.json`. Les oracles de l'état
+initial, des étapes 1 à 5, 7 et 8, d'ALERTE_ALPHA et la logique de l'incident B
+sont des tests automatisés.
+
+**Écart au plan** : l'étape 6 (retransmission exacte de C1) est reportée en
+T2, où elle est déjà prévue. La déduplication dépend de l'identité du client
+authentifié et de la persistance, qui appartiennent au service de session et
+non au domaine. Le test existe et est marqué comme ignoré jusqu'à T2.
+
+**Précisions prises en T1 — à valider** (détail dans
+`app/packages/domain/README.md`) :
+
+1. un nouvel examen du même objet est valide et coûte son prix, sans
+   nouvelle information (base de l'étape 7) ;
+2. en `RECOVERY_PAUSED`, les commandes joueurs sont aussi refusées, pas
+   seulement l'avancement du temps ;
+3. pause et reprise sont des événements publics ; l'audio est réservé au
+   maître ;
+4. un avancement au-delà d'une échéance la déclenche à son heure exacte ;
+5. QR de test opaque, groupes destinataires non encore modélisés,
+   session limitée à une journée fictive.
+
 ### T2 — Service maître et persistance
 
 - Service de session : authentification abstraite (port), autorisation,

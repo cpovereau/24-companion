@@ -72,13 +72,33 @@ jobs:
         run: flutter pub get
 
       - name: Format
-        run: dart format --output=none --set-exit-if-changed companion/lib companion/test
+        run: dart format --output=none --set-exit-if-changed companion/lib companion/test packages
 
-      - name: Analyse
+      # Le domaine reste en Dart pur (LOT0_POC_CONCEPTION.md §3.2).
+      - name: Frontière du domaine
+        run: |
+          if grep -rnE "import +'(dart:io|dart:ui|package:flutter)" packages/domain/lib; then
+            echo "Le domaine ne doit importer ni dart:io, ni dart:ui, ni Flutter." >&2
+            exit 1
+          fi
+          if grep -nE '^\s+flutter:' packages/domain/pubspec.yaml; then
+            echo "Le domaine ne doit pas dépendre de Flutter." >&2
+            exit 1
+          fi
+
+      - name: Analyse du domaine
+        working-directory: app/packages/domain
+        run: dart analyze --fatal-infos
+
+      - name: Tests du domaine
+        working-directory: app/packages/domain
+        run: dart test
+
+      - name: Analyse de l'application
         working-directory: app/companion
         run: flutter analyze --fatal-infos
 
-      - name: Tests
+      - name: Tests de l'application
         working-directory: app/companion
         run: flutter test
 

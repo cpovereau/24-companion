@@ -15,6 +15,8 @@ règles de dépendance sont décrites dans
 |---|---|
 | `pubspec.yaml` | Racine du workspace Dart |
 | `companion/` | Application Flutter `juste_a_temps` (Android, iOS), rôles maître et joueur à venir |
+| `packages/domain/` | `juste_a_temps_domain` : domaine artificiel INTERVENTION_ALPHA, Dart pur (T1) |
+| `fixtures/intervention_alpha/` | Données synthétiques du micro-scénario (JSON expérimental) |
 | `tool/ci/` | Contrôle des permissions des artefacts (ADR-0002) |
 | `packages/` | Packages Dart par frontière logique, créés au fil des tranches |
 | `spikes/` | Explorations jetables : hors workspace Dart, exclues de la CI, jamais réutilisées telles quelles |
@@ -33,7 +35,14 @@ Depuis `app/` :
 
 ``` shell
 flutter pub get
-dart format --output=none --set-exit-if-changed companion/lib companion/test
+dart format --output=none --set-exit-if-changed companion/lib companion/test packages
+```
+
+Depuis `app/packages/domain/` :
+
+``` shell
+dart analyze --fatal-infos
+dart test
 ```
 
 Depuis `app/companion/` :
@@ -61,7 +70,8 @@ le daemon Gradle si un AVD doit être lancé (`android/gradlew --stop`).
 Workflow [`app-ci`](../.github/workflows/app-ci.yml) sur `main` et les pull
 requests touchant `app/` (hors `app/spikes/`) :
 
-1. format, analyse (`--fatal-infos`) et tests ;
+1. format, frontière du domaine (ni `dart:io`, ni Flutter), analyse
+   (`--fatal-infos`) et tests du domaine et de l'application ;
 2. APK release et comparaison stricte de ses permissions à l'allowlist.
 
 Le build iOS sur runner macOS est reporté.
@@ -71,5 +81,5 @@ Le build iOS sur runner macOS est reporté.
 | Tranche | État |
 |---|---|
 | T0 — Socle et CI | Validé le 13 septembre 2026 : CI verte au premier passage ; APK release sans permission système (seule entrée : permission interne AndroidX, à confirmer par l'ADR-0003) |
-| T1 — Domaine INTERVENTION_ALPHA | À faire |
+| T1 — Domaine INTERVENTION_ALPHA | Réalisé : 32 tests d'oracle verts ; étape 6 reportée en T2 (déduplication) ; précisions à valider (`packages/domain/README.md`) |
 | T2 à T8 | À faire |

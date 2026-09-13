@@ -9,3 +9,4 @@ environment:
 # Les packages sont ajoutés au fil des tranches. app/spikes/ n'en fait jamais partie.
 workspace:
   - companion
+  - packages/domain

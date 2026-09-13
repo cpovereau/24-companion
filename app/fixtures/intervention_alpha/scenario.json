@@ -1,0 +1,36 @@
+{
+  "_note": "Données entièrement synthétiques du POC LOT 0 (LOT0_PREPARATION.md §3). Format JSON expérimental, distinct du package .24scenario définitif. Aucune règle réelle ni secret de conception.",
+  "scenarioId": "INTERVENTION_ALPHA",
+  "startTime": "14:00",
+  "initialTension": 2,
+  "characters": [
+    {
+      "id": "P1",
+      "initialActionPoints": 2,
+      "initialInformation": ["INFO_P1_INITIAL"]
+    },
+    {
+      "id": "P2",
+      "initialActionPoints": 2,
+      "initialInformation": ["INFO_P2_INITIAL"]
+    }
+  ],
+  "masterSecrets": ["SECRET_MJ_ALPHA"],
+  "objects": [
+    {
+      "id": "OBJET_ALPHA",
+      "qrCode": "TEST-QR-0001",
+      "examineCost": 1,
+      "revealedInformation": ["INDICE_ALPHA"],
+      "grantedAssets": ["OBJET_ALPHA_IMAGE"]
+    }
+  ],
+  "deadlines": [
+    {
+      "id": "ALERTE_ALPHA",
+      "at": "14:10",
+      "tensionAfter": 4,
+      "masterAudio": "ALERTE_ALPHA_AUDIO"
+    }
+  ]
+}
