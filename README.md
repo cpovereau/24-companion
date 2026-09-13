@@ -17,8 +17,8 @@ L'application devra notamment permettre de gérer :
 - des chronomètres individuels ou collectifs ;
 - l'estimation et le calcul de la durée des actions ;
 - l'investissement de ressources pour influer sur cette durée ;
-- la synchronisation de plusieurs fils temporels ;
-- à terme, certaines informations personnelles, communications ou événements secrets.
+- la synchronisation des actions et groupes dans une chronologie fictive commune ;
+- à terme, certaines informations propres aux personnages, communications de jeu ou événements secrets.
 
 La complexité mécanique doit rester aussi discrète que possible pour les joueurs.
 
@@ -29,6 +29,13 @@ Le projet est en phase de conception.
 Les documents fonctionnels et de conception existants sont conservés dans Google Drive. Le répertoire local `doc/conception` est prévu comme **liaison locale** vers le dossier Google Drive synchronisé ; son contenu ne doit pas être publié dans ce dépôt Git.
 
 La documentation propre au développement de l'application est versionnée en Markdown dans `doc/dev`.
+
+La référence fonctionnelle locale est
+[`APPLICATION_COMPAGNON.md`](doc/dev/specifications/APPLICATION_COMPAGNON.md).
+Elle décrit le quoi/pourquoi issu de la conception ; les ADR portent les
+décisions, l'architecture les orientations techniques et le LOT 0 les
+conventions expérimentales et leurs tests. Google Drive reste une source
+humaine, sans être un prérequis d'accès pour préparer le POC.
 
 ## Structure
 
@@ -67,7 +74,7 @@ Documentation technique versionnée avec le code :
 
 - **architecture** : architecture applicative, flux, stockage, communications, fonctionnement hors ligne ;
 - **decisions** : décisions d'architecture (ADR) et arbitrages techniques ;
-- **specifications** : spécifications techniques exploitables par le développement ;
+- **specifications** : référence fonctionnelle et plan de validation technique du POC ;
 - **mvp** : découpage des lots, backlog et critères d'acceptation du MVP ;
 - **ui-ux** : parcours, écrans, ergonomie et règles d'interface ;
 - **testing** : stratégie de tests, jeux d'essai et validation ;
@@ -86,3 +93,7 @@ En conséquence :
 ## Stack technique
 
 La stack technique n'est pas figée dans ce dépôt à ce stade. Les choix de framework mobile, architecture, stockage et communications devront être documentés dans `doc/dev/decisions` avant leur mise en œuvre.
+
+Flutter et React Native restent les finalistes. Flutter est seulement le
+premier candidat recommandé pour expérimentation ; aucune stack définitive
+n'est choisie. Les conventions du LOT 0 ne figent pas les choix produit.
