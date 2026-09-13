@@ -1,14 +1,18 @@
-# Allowlist des permissions de l'APK release Android — ADR-0002.
+# Allowlist des permissions de l'APK release Android.
 #
-# Toute modification est une décision : la correspondance entre les capacités
-# autorisées par l'ADR-0002 et les permissions concrètes sera formalisée par
-# l'ADR-0003, à valider avant T4 (doc/dev/architecture/LOT0_POC_CONCEPTION.md).
+# Référence : ADR-0003 (ACTÉ), qui met en œuvre l'ADR-0002.
+# doc/dev/decisions/ADR-0003-permission-mapping.md
 #
-# Format : <type> <nom> ; ${applicationId} = identifiant du package.
+# Règles :
+#   - chaque entrée renvoie à sa référence dans l'ADR-0003 (A1, A2…) ;
+#   - une permission AUTORISÉE — CONDITIONNELLE n'est ajoutée qu'avec la
+#     fonction qui l'introduit, après observation dans l'APK ;
+#   - une permission INTERDITE ou HORS TABLE n'est jamais ajoutée ici sans
+#     amendement préalable de l'ADR-0003.
+#
+# Format : <type> <nom>  # <référence ADR-0003>
+# ${applicationId} = identifiant du package.
 
-# Base observée au T0 (13 septembre 2026), APK release du template Flutter.
-# Permission de signature interne déclarée par AndroidX (androidx.core) pour
-# protéger les récepteurs dynamiques non exportés. Elle ne donne accès à aucune
-# capacité ni donnée du téléphone. À confirmer dans l'ADR-0003.
-permission ${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
-uses-permission ${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+# A1 — technique interne AndroidX, observée au T0 (13 septembre 2026).
+permission ${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION  # A1
+uses-permission ${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION  # A1

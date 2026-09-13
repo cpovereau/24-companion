@@ -425,6 +425,9 @@ L'[ADR-0002](../decisions/ADR-0002-player-client-privacy.md) fait autorité
 pour la liste complète des interdictions, la caméra au premier besoin
 pertinent sans Photos, le sandbox, les dépendances et l'allowlist CI sur
 les artefacts finaux iOS/Android. Ces exigences sont **ACTÉES**.
+L'[ADR-0003](../decisions/ADR-0003-permission-mapping.md) (**ACTÉ**) fixe
+les permissions et clés concrètes correspondant à chaque capacité, dont
+`ACCESS_LOCAL_NETWORK` pour les builds Android ciblant l'API 37.
 
 ### Deux frontières indépendantes et rôles
 

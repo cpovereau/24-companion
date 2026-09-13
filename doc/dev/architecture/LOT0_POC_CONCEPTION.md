@@ -166,15 +166,16 @@ T2, où elle est déjà prévue. La déduplication dépend de l'identité du cli
 authentifié et de la persistance, qui appartiennent au service de session et
 non au domaine. Le test existe et est marqué comme ignoré jusqu'à T2.
 
-**Précisions prises en T1 — à valider** (détail dans
-`app/packages/domain/README.md`) :
+**Précisions prises en T1** (détail dans `app/packages/domain/README.md`) :
 
-1. un nouvel examen du même objet est valide et coûte son prix, sans
-   nouvelle information (base de l'étape 7) ;
-2. en `RECOVERY_PAUSED`, les commandes joueurs sont aussi refusées, pas
-   seulement l'avancement du temps ;
-3. pause et reprise sont des événements publics ; l'audio est réservé au
-   maître ;
+1. **validé pour le POC** : un nouvel examen du même objet est valide et
+   coûte son prix, sans nouvelle information (base de l'étape 7). Cette
+   finesse de règle ne reflète pas la mécanique réelle ;
+2. **validé** : en `RECOVERY_PAUSED`, les commandes joueurs sont aussi
+   refusées. C'est le temps du récit ;
+3. pause et reprise sont des événements publics, c'est-à-dire autorisés pour
+   tous les participants authentifiés de la session (maître et joueurs) ;
+   l'audio est réservé au maître ;
 4. un avancement au-delà d'une échéance la déclenche à son heure exacte ;
 5. QR de test opaque, groupes destinataires non encore modélisés,
    session limitée à une journée fictive.
@@ -234,7 +235,7 @@ jetable du serveur WebSocket TLS sur le Pixel, pour détecter tôt un
 blocage de faisabilité, dans `app/spikes/` (§10). Aucun code de spike
 n'est réutilisé tel quel dans les packages.
 
-**Prérequis** : ADR-0003 validé (§5, §10) avant l'ajout de `INTERNET`.
+**Prérequis levé** : ADR-0003 ACTÉ (§5) ; `INTERNET` s'ajoute avec renvoi à A2.
 
 ### T5 — Découverte locale et changement d'adresse
 
@@ -267,28 +268,32 @@ n'est réutilisé tel quel dans les packages.
   d'incidents consignés ; clients complémentaires physiques ou virtuels.
 - Rapport des mesures et de la grille comparative Flutter.
 
-## 5. Permissions et allowlist — ACTÉ sur le principe, noms À ARBITRER
+## 5. Permissions et allowlist — ACTÉ
 
 L'ADR-0002 impose l'allowlist sur l'artefact final et toute nouvelle
-permission par décision explicite. Les **noms concrets** des permissions
-correspondant aux capacités autorisées ne sont pas encore fixés. Proposition
-à valider **avant d'ajouter la dépendance ou la fonction qui les introduit** :
+permission par décision explicite. La correspondance entre capacités et
+permissions concrètes est fixée par
+l'[ADR-0003](../decisions/ADR-0003-permission-mapping.md) (**ACTÉ** le
+13 septembre 2026) : statuts observée, conditionnelle, interdite et hors
+table, tables Android (A1 à A8) et iOS (I1 à I5), demande au premier besoin
+et règle du binaire commun. Il fait autorité sur ce document.
 
-| Capacité ADR-0002 | Android — à confirmer sur les builds observés | iOS — à confirmer |
-|---|---|---|
-| Réseau local | `INTERNET` ; `ACCESS_NETWORK_STATE` et `CHANGE_WIFI_MULTICAST_STATE` si requis par mDNS | `NSLocalNetworkUsageDescription`, `NSBonjourServices` |
-| Caméra QR | `CAMERA` | `NSCameraUsageDescription` |
-| Sortie audio | aucune permission attendue | mode arrière-plan audio pour le rôle maître, **À TESTER** |
-| Écran éveillé (maître) | aucune si drapeau de fenêtre ; `WAKE_LOCK` à éviter sauf nécessité démontrée | aucune attendue |
-| Stockage privé | aucune | aucune |
+Repères pour les tranches, sans remplacer l'ADR :
 
-Mise en œuvre T0 : l'allowlist Android initiale reflète exactement le
-template Flutter **observé** sur l'APK release, puis s'élargit uniquement
-par une modification revue de `tool/ci/`. Contrôle sur l'APK release, pas
-seulement debug : le template ajoute `INTERNET` aux variantes debug/profile.
+| Tranche | Ajouts conditionnels prévus |
+|---|---|
+| T4 | `INTERNET` (A2) ; `NSLocalNetworkUsageDescription` (I1) ; `ACCESS_LOCAL_NETWORK` (A3) dès que `targetSdk` ≥ 37 |
+| T5 | `NSBonjourServices` (I2) ; `ACCESS_NETWORK_STATE` (A4) ou `CHANGE_WIFI_MULTICAST_STATE` (A5) seulement si la solution retenue l'exige |
+| T7 | `CAMERA` (A6) ; `NSCameraUsageDescription` (I3) |
 
-**Arbitré (option B, §10)** : cette table sera formalisée par un ADR-0003
-validé avant T4, puis amendé pour toute nouvelle permission.
+Audio en arrière-plan, service de premier plan, notifications et
+`WAKE_LOCK` sont **HORS TABLE** : amendement de l'ADR-0003 requis.
+
+Mise en œuvre T0 : l'allowlist Android reflète exactement l'APK release
+**observé** (entrée A1), puis ne s'élargit que par modification revue de
+`tool/ci/`, avec renvoi à la référence de l'ADR. Contrôle sur l'APK
+release, pas seulement debug : le template ajoute `INTERNET` aux variantes
+debug/profile.
 
 ## 6. Intégration continue — RECOMMANDATION
 
@@ -390,13 +395,11 @@ contient la shortlist à étudier et la grille A à G.
   workspace Dart et exclu de la CI.
 - **Runner macOS** : reporté ; le job `ios-build` n'est pas activé en T0.
 - **Workspace Dart multi-packages** (§3) : confirmé.
-- **Procédure d'ajout de permission — option B** : un **ADR-0003**
-  établira la correspondance entre capacités ADR-0002 et permissions
-  Android/iOS concrètes, sur la base des builds observés. Il sera proposé à
-  validation humaine **avant T4**, puis amendé à chaque nouvelle permission.
-  Une permission absente de cette table exige une nouvelle décision
-  explicite. Les allowlists de `tool/ci/` y font référence. Doit être tranché avant T4
-   (`INTERNET` pour le WebSocket).
+- **Procédure d'ajout de permission — option B** : l'**ADR-0003** établit
+  la correspondance entre les capacités de l'ADR-0002 et les permissions
+  Android/iOS concrètes. Il a été validé et ACTÉ le 13 septembre 2026, avant
+  T4, et sera amendé pour toute permission hors table. Les allowlists de
+  `tool/ci/` y font référence.
 
 ## 11. Hors périmètre de ce document
 

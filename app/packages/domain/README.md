@@ -22,15 +22,25 @@ authentification (T2), construction des vues client (T3), transport (T4).
 
 ## Conventions précisées en T1
 
-Précisions de conception prises pendant l'implémentation, à valider
-(`LOT0_POC_CONCEPTION.md` §4, T1) :
+Précisions prises pendant l'implémentation (`LOT0_POC_CONCEPTION.md` §4, T1).
+Les points 1 et 2 ont été validés par l'utilisateur le 13 septembre 2026.
 
-1. Un nouvel examen du même objet est une action valide : il consomme son
-   coût sans nouvelle information (étape 7 du parcours).
-2. En `recoveryPaused`, toute commande de joueur et tout avancement du temps
-   sont refusés (`SESSION_NOT_RUNNING`) jusqu'à la reprise explicite du MJ.
-3. L'événement de pause et celui de reprise sont publics ; la demande audio
-   est réservée au maître.
+1. **Validé pour le POC** : un nouvel examen du même objet est une action
+   valide ; il consomme son coût sans nouvelle information (étape 7). Règle
+   artificielle, qui ne reflète pas la mécanique réelle de 24.
+2. **Validé** : en `recoveryPaused`, toute commande de joueur et tout
+   avancement du temps sont refusés (`SESSION_NOT_RUNNING`) jusqu'à la
+   reprise explicite du MJ. C'est le temps du récit : les joueurs n'ont pas à
+   intervenir.
+3. L'événement de pause et celui de reprise sont **publics** ; la demande
+   audio est réservée au maître. Dans le domaine, « public »
+   (`PublicVisibility`) signifie que l'information est autorisée pour tous
+   les participants de la session : le maître et chaque joueur associé à un
+   personnage. La projection (T3) pourra donc l'envoyer à chaque téléphone
+   joueur, par exemple « Partie suspendue par le Conteur à 14:07 ».
+   « Public » ne signifie jamais hors de la session ni diffusé sur le réseau
+   sans authentification. À l'inverse, `CharactersVisibility` limite
+   l'information aux personnages listés, et `MasterOnlyVisibility` au maître.
 4. Un avancement qui dépasse une échéance la déclenche à son heure exacte,
    puis poursuit jusqu'à l'heure demandée.
 5. Le QR de test est un code opaque (`TEST-QR-0001`), sans syntaxe définitive.

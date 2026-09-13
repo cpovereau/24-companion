@@ -238,6 +238,22 @@ sur le code source, car une dépendance peut ajouter des permissions.
 Toute nouvelle permission nécessite une décision d'architecture
 explicite.
 
+### ACTÉ --- Correspondance capacités / permissions (ADR-0003)
+
+`doc/dev/decisions/ADR-0003-permission-mapping.md` fixe les permissions
+Android et les clés iOS concrètes, chacune avec un statut : observée,
+conditionnelle, interdite ou hors table. Avant d'ajouter une dépendance ou
+une fonction mobile :
+
+1.  vérifier le statut de chaque permission qu'elle introduit dans
+    l'artefact final ;
+2.  une permission **conditionnelle** s'ajoute à l'allowlist avec sa
+    référence (A2, I1…) seulement lorsque sa fonction est livrée ;
+3.  une permission **interdite** ou **hors table** bloque le changement :
+    demander un amendement de l'ADR-0003 plutôt que de la contourner ;
+4.  demander les permissions soumises à l'utilisateur au premier besoin,
+    jamais au démarrage.
+
 La non-intrusion concerne les contenus personnels du terminal. Elle
 n'interdit pas les données internes de 24. Leur confidentialité relève
 séparément de l'ADR-0001 : seules les données de jeu autorisées peuvent
