@@ -70,6 +70,6 @@ Le build iOS sur runner macOS est reporté.
 
 | Tranche | État |
 |---|---|
-| T0 — Socle et CI | En cours |
+| T0 — Socle et CI | Validé le 13 septembre 2026 : CI verte au premier passage ; APK release sans permission système (seule entrée : permission interne AndroidX, à confirmer par l'ADR-0003) |
 | T1 — Domaine INTERVENTION_ALPHA | À faire |
 | T2 à T8 | À faire |
